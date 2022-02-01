@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "near": "^0.2.2",
+    "near-cli": "^1.0.0"
+  }
+}
