@@ -11,11 +11,11 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 
 
-## Screenshots
+<!-- ## Screenshots
 
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
-
+ -->
 ## Installation
 
 1. Install ```near-cli```
@@ -50,12 +50,12 @@ Install dependencies
   npm install
 ```
 
-Start the server
+<!-- Start the server
 
 ```bash
   npm run start
 ```
-
+ -->
 
 ## Usage/Examples
 
@@ -68,19 +68,19 @@ function App() {
 ```
 
 
-## Features
+<!-- ## Features
 
 - Light/dark mode toggle
 - Live previews
 - Fullscreen mode
 - Cross platform
 
-
+ -->
 ## Tech Stack
 
-**Client:** React, Redux, TailwindCSS
+**Contracts:** Rust, Near-cli
 
-**Server:** Node, Express
+**Interface:** JavaScript, Python
 
 
 ## Authors
