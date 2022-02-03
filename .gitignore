@@ -11,9 +11,12 @@ Cargo.lock
 
 
 # Added by cargo
-
 target
-
 node_modules/
 
+# Near-cli
 neardev/
+
+# Python
+__pycache__
+.pytest_cache

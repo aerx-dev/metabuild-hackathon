@@ -1,0 +1,13 @@
+{
+  "contracts": {},
+  "tests": {
+    "test/test_ipfs.py": {
+      "coverage": false,
+      "isolated": false,
+      "results": ".",
+      "sha1": "77ed1ab71c87e641c13300aa2f22eaf1db1ac4fe",
+      "txhash": []
+    }
+  },
+  "tx": {}
+}
