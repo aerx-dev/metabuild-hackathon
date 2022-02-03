@@ -26,8 +26,10 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 
 
 Testing:
-```
+```bash
 cargo test -- --nocapture
+# Test python scripts
+pytest
 ```
     
 ## Run Locally

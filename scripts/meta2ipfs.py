@@ -1,13 +1,12 @@
 """deploy Metadata on IPFS"""
 
-# TODO write test!!
 
 import requests
 import argparse
 
 
 def upload2ipfs(file_path: str) -> str:
-    """Upload to ipfs using local port. 
+    """Upload to ipfs using local port.
     IPFS node must be running locally. Run:
     $ ipfs daemon
 
@@ -27,13 +26,15 @@ def upload2ipfs(file_path: str) -> str:
     return nft_uri
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     """Main App.
-    Runs upload2ipfs function. 
+    Runs upload2ipfs function.
     """
-    parser = argparse.ArgumentParser(description='Get Metadata path.')
-    parser.add_argument('meta-path', metavar='meta', type=str, help='an integer for the accumulator')
+    parser = argparse.ArgumentParser(description="Get Metadata path.")
+    parser.add_argument(
+        "meta-path", metavar="meta", type=str, help="an integer for the accumulator"
+    )
     args = parser.parse_args()
-    meta_path = args['meta-pass']
+    meta_path = args["meta-pass"]
     url = upload2ipfs(meta_path)
     print(url)
