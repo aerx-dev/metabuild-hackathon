@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@types/node": "^17.0.15",
+    "dotenv": "^16.0.0",
     "near": "^0.2.2",
     "near-cli": "^1.0.0"
   }
