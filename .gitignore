@@ -15,8 +15,12 @@ target
 node_modules/
 
 # Near-cli
+
 neardev/
+package-lock.json
 
 # Python
 __pycache__
 .pytest_cache
+build/
+.vscode/
