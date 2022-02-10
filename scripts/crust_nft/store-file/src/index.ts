@@ -6,6 +6,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { typesBundleForPolkadot } from '@crustio/type-definitions';
 import { Keyring } from '@polkadot/keyring';
 
+import { signIpfsHeader } from "./nearSign";
+
 require('dotenv').config()
 const crustChainEndpoint = process.env.CRUST_CHAIN_ENDPOINT; // More endpoints: 'wss://rpc-rocky.crust.network' https://github.com/crustio/crust-apps/blob/master/packages/apps-config/src/endpoints/production.ts#L9
 const ipfsW3GW = 'https://crustipfs.xyz'; // More web3 authed gateways: https://github.com/crustio/ipfsscan/blob/main/lib/constans.ts#L29
@@ -20,18 +22,23 @@ main();
 async function main() {
     // I. Upload file to IPFS
     // 1. Read file
-    const filePath = process.env.FILE_PATH
+    const filePath: string = process.env.FILE_PATH
     const fileContent = await fs.readFileSync(path.resolve(__dirname, filePath));
 
     // 2. [Local] Create IPFS instance
-    const ipfsLocal = await create({ url: 'http://localhost:5001' });
+    // const ipfsLocal = await create({ url: 'http://localhost:5001' });
 
     // 2. [Gateway] Create IPFS instance
-    // Now support: ethereum-series, polkadot-series, solana, elrond, flow, near, ...
-    // Let's take ethereum as example
-    const pair = ethers.Wallet.createRandom();
-    const sig = await pair.signMessage(pair.address);
-    const authHeaderRaw = `eth-${pair.address}:${sig}`;
+    
+    // // Now support: ethereum-series, polkadot-series, solana, elrond, flow, near, ...
+    // // Let's take ethereum as example
+    // const pair = ethers.Wallet.createRandom();
+    // const sig = await pair.signMessage(pair.address);
+    // const authHeaderRaw = `eth-${pair.address}:${sig}`;
+
+    // NEAR implemented by Wolf
+    const authHeaderRaw = await signIpfsHeader()
+
     const authHeader = Buffer.from(authHeaderRaw).toString('base64');
     const ipfsRemote = create({
         url: `${ipfsW3GW}/api/v0`,
@@ -52,12 +59,12 @@ async function main() {
     await addPrepaid(rst.cid, addedAmount);
 
     // IV. Query storage status
-    // Query forever here ...
-    while (true) {
-        const orderStatus: any = (await getOrderState(rst.cid)).toJSON();
-        console.log('Replica count: ', orderStatus['reported_replica_count']); // Print the replica count
-        await new Promise(f => setTimeout(f, 1500)); // Just wait 1.5s for next chain-query
-    }
+    // Query forever here ... Or not
+    // while (true) {
+    const orderStatus: any = (await getOrderState(rst.cid)).toJSON();
+    console.log('Replica count: ', orderStatus['reported_replica_count']); // Print the replica count
+    await new Promise(f => setTimeout(f, 1500)); // Just wait 1.5s for next chain-query
+    // }
 }
 
 async function addFile(ipfs: IPFSHTTPClient, fileContent: any) {
@@ -86,11 +93,11 @@ async function placeStorageOrder(fileCid: string, fileSize: number) {
     // 3. Send transaction
     await api.isReadyOrError;
     return new Promise((resolve, reject) => {
-        tx.signAndSend(krp, ({events = [], status}) => {
+        tx.signAndSend(krp, ({ events = [], status }) => {
             console.log(`💸  Tx status: ${status.type}, nonce: ${tx.nonce}`);
 
             if (status.isInBlock) {
-                events.forEach(({event: {method, section}}) => {
+                events.forEach(({ event: { method, section } }) => {
                     if (method === 'ExtrinsicSuccess') {
                         console.log(`✅  Place storage order success!`);
                         resolve(true);
@@ -116,11 +123,11 @@ async function addPrepaid(fileCid: string, amount: number) {
     // 3. Send transaction
     await api.isReadyOrError;
     return new Promise((resolve, reject) => {
-        tx.signAndSend(krp, ({events = [], status}) => {
+        tx.signAndSend(krp, ({ events = [], status }) => {
             console.log(`💸  Tx status: ${status.type}, nonce: ${tx.nonce}`);
 
             if (status.isInBlock) {
-                events.forEach(({event: {method, section}}) => {
+                events.forEach(({ event: { method, section } }) => {
                     if (method === 'ExtrinsicSuccess') {
                         console.log(`✅  Add prepaid success!`);
                         resolve(true);
