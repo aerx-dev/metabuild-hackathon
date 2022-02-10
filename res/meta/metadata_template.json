@@ -1,6 +1,9 @@
 {
   "spec": "NFT_METADATA_SPEC.to_string()",
   "name": "Example NEAR non-fungible token",
+  "description": "This is the NFT description",
+  "date": "Christmas",
+  "type": "Image",
   "symbol": "Example NEAR non-fungible token",
   "icon": "Some(DATA_IMAGE_SVG_NEAR_ICON.to_string())",
   "base_uri": null,
