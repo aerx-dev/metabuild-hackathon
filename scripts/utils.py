@@ -65,7 +65,8 @@ def get_contract(c_name: string) -> ProjectContract:
     if net in LOCAL_BLOCKCHAINS:
         if len(c_type) <= 0:
             # MockV3Aggregator.length
-            deploy_mocks()
+            # deploy_mocks()
+            pass
         contract = c_type[-1]
     else:
         c_address = config["networks"][net][c_name]

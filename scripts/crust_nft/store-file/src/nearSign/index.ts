@@ -1,1 +1,0 @@
-export { signIpfsHeader } from "./NearSign"

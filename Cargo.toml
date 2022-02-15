@@ -1,22 +1,19 @@
 [package]
-name = "MetaBuildHackathon"
-version = "0.1.0"
-edition = "2021"
+name = "MetaBUILD"
+version = "0.0.1"
+authors = ["Near Inc <hello@near.org>"]
+edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
-wasm-bindgen = "0.2"
+[dev-dependencies]
 near-sdk = "3.1.0"
-near-sdk-sim = "3.2.0"
-near-contract-standards = "3.1.1"
+near-sdk-sim = "3.1.1"
 
 # remember to include a line for each contract
-non-fungible-token = { path = "./nft" }
-approval-receiver = { path = "./test/test-approval-receiver" }
-token-receiver = { path = "./test/test-token-receiver" }
+approval-receiver = { path = "./tests/test-approval-receiver" }
+token-receiver = { path = "./tests/test-token-receiver" }
+aerx-nft = { path = "./contracts/aerx_nft" }
+aex-token = { path = "./contracts/aex_token" }
+
 
 [profile.release]
 codegen-units = 1
@@ -30,7 +27,8 @@ overflow-checks = true
 [workspace]
 # remember to include a member for each contract
 members = [
-  "nft",
-  "test/test-approval-receiver",
-  "test/test-token-receiver",
+    "contracts/aerx_nft",
+  "contracts/aex_token",
+  "tests/test-approval-receiver",
+  "tests/test-token-receiver",
 ]
