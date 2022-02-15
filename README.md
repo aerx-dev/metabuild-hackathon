@@ -11,17 +11,12 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 
 
-## Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
-
 ## Installation
 
 1. Install ```near-cli```
 1. Install ```cargo install wasm-pack``` to build the WASM file.
 2. Write smart contract in Rust.
-3. Compile with ```bash ./build.sh <folder>``` folder for now is nft.
+3. Compile with ```bash ./build.sh <folder>``` folder for now is [`contract/nft`](./contracts/nft/).
 4. Deploy on dev-near ```near dev-deploy --wasmFile res/<contract>.wasm```
 
 
