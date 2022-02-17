@@ -76,18 +76,3 @@ impl Counter {
         env::log(b"Reset NFT count to zero");
     }
 }
-
-// unlike the struct's functions above, this function cannot use attributes #[derive(…)] or #[near_bindgen]
-// any attempts will throw helpful warnings upon 'cargo build'
-// while this function cannot be invoked directly on the blockchain, it can be called from an invoked function
-fn after_counter_change() {
-    // show helpful warning that i8 (8-bit signed integer) will overflow above 127 or below -128
-    env::log("Make sure you don't overflow, my friend.".as_bytes());
-}
-
-/*
- * the rest of this file sets up unit tests
- * to run these, the command will be:
- * cargo test --package rust-counter-tutorial -- --nocapture
- * Note: 'rust-counter-tutorial' comes from cargo.toml's 'name' key
- */
