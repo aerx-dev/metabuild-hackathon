@@ -20,11 +20,12 @@ near view $FT  ft_total_supply '{}' --accountId $ID
 # View metadata
 near view $FT  ft_metadata '{}' --accountId $ID
 # Check token balance of an id.
-near call $FT ft_balance_of '{"account_id":"'$FT'"}' --accountId $ID 
+near call $FT ft_balance_of '{"account_id":"'$FT'"}' --accountId $ID
 ```
 
+Here are the offical NEAR [docs](https://nomicon.io/Standards/FungibleToken/)
 
-# Fungible Token (FT)
+# Now the README from the NEAR standards repo: Fungible Token (FT)
 
 Example implementation of a [Fungible Token] contract which uses [near-contract-standards] and [simulation] tests. This is a contract-only example.
 

@@ -1,8 +1,10 @@
 # !bin/bash
 
+# innazh.testnet
+
 # export ID=3llobo.testnet
 
-# near dev-deploy --wasmFile res/aex_token.wasm
+# near dev-deploy --wasmFile res/aex_token.wasm 
 
 # export FT=dev-1644927834577-96225193029183
 
