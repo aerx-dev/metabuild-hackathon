@@ -13,6 +13,7 @@ approval-receiver = { path = "./tests/test-approval-receiver" }
 token-receiver = { path = "./tests/test-token-receiver" }
 aerx-nft = { path = "./contracts/aerx_nft" }
 aex-token = { path = "./contracts/aex_token" }
+aerx-profile-nft = { path = "./contracts/aerx_profile_nft"}
 
 [profile.release]
 codegen-units = 1
@@ -28,6 +29,7 @@ overflow-checks = true
 members = [
   "contracts/aerx_nft",
   "contracts/aex_token",
+  "./contracts/aerx_profile_nft",
   "tests/test-approval-receiver",
   "tests/test-token-receiver",
 ]
