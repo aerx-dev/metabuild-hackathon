@@ -83,10 +83,10 @@ impl Contract {
             metadata: LazyOption::new(b"m".to_vec(), Some(&metadata)),
             NFTpremie: NFT_PREMIE,
             NFTid: nft_id,
-            owner: owner_id,
+            owner: owner_id.clone(),
         };
-        this.token.internal_register_account(owner_id.as_ref());
-        this.token.internal_deposit(owner_id.as_ref(), total_supply.into());
+        this.token.internal_register_account(&owner_id.as_ref());
+        this.token.internal_deposit(&owner_id.as_ref(), total_supply.into());
         this
     }
 
@@ -107,7 +107,7 @@ impl Contract {
     #[allow(unused_variables)]
     #[payable]
     pub fn collect_premie(&mut self, account_id: ValidAccountId) -> bool {
-        assert_eq!(env::signer_account_id(), self.NFTid, "Only applicable when creating a profile NFT!");
+        assert_eq!(&env::signer_account_id(), self.NFTid.as_ref(), "Only applicable when creating a profile NFT!");
         let amount: Balance = env::attached_deposit();
         let min_balance = self.storage_balance_bounds().min.0;
         assert!(amount > min_balance, "Insufficient deposit! Add {} to your transaction.", &min_balance);
@@ -115,15 +115,16 @@ impl Contract {
 
         // Check if user is registered, if not do it!
         if !self.token.accounts.contains_key(&account_id.to_string()) {
-            let acc_option = Some(account_id);
+            let acc_option = Some(account_id.clone());
             let _ = self.storage_deposit(acc_option, Some(false));
         } else {
             // If he is already registered, lets refund his deposit.
+            let acc_str = account_id.to_string();
             if amount > 0 {
-                Promise::new(*account_id.as_ref()).transfer(amount);
+                Promise::new(acc_str).transfer(amount);
         }}
         // Deposit the premie
-        self.token.internal_deposit(account_id.as_ref(), self.NFTpremie.into());
+        self.token.internal_deposit(&account_id.to_string(), self.NFTpremie.into());
         true
     }
 
@@ -135,22 +136,22 @@ impl Contract {
         self.NFTpremie
     }
 
-    pub fn set_nftpremie(&self, _nft_premie: u8) {
-        assert_eq!(self.owner, env::signer_account_id());
+    pub fn set_nftpremie(&mut self, _nft_premie: u8) {
+        assert_eq!(self.owner.as_ref(), &env::signer_account_id());
         self.NFTpremie = _nft_premie;
     }
 
-    pub fn set_owner(&self, new_owner: ValidAccountId) {
-        assert_eq!(self.owner, env::signer_account_id());
+    pub fn set_owner(&mut self, new_owner: ValidAccountId) {
+        assert_eq!(self.owner.as_ref(), &env::signer_account_id());
         self.owner = new_owner;
     }
 
     pub fn get_nftId(&self) -> ValidAccountId {
-        self.NFTid
+        self.NFTid.clone()
     }
 
-    pub fn set_nftId(&self, _nft_id: ValidAccountId) {
-        assert_eq!(self.owner, env::signer_account_id());
+    pub fn set_nftId(&mut self, _nft_id: ValidAccountId) {
+        assert_eq!(self.owner.as_ref(), &env::signer_account_id());
         self.NFTid = _nft_id;
     }
 }
