@@ -10,7 +10,7 @@ near dev-deploy --wasmFile res/aex_token.wasm
 # Store the id of the dev account
 export FT=<contract-id>
 # Init the contract. Owner can be you or dev account. On-chain it should be the contract/dev account. Owner account gets all the initial tokens.
-near call $FT new_default_meta '{"owner_id":"3llobo.testnet", "total_supply":"1000000000"}' --account_id $ID
+near call $FT new_default_meta '{"owner_id":"'$ID'", "total_supply":"1000000000"}' --account_id $ID
 # Deposit a minimun storage fee, this registers the sender id. The fee is returned when id is deleted/burned from storage.
 near call $FT storage_deposit '' --accountId $FT --amount 0.001251
 # Transfer between registered accounts.

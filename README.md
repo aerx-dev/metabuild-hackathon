@@ -1,60 +1,47 @@
 
 # MetaBUILD Hackathon
-Our contribution to the [NEAR MetaBUILD](https://metabuild.devpost.com) hackathon. This includes, for now only the backend and some js scripts.
+Our contribution to the [NEAR MetaBUILD](https://metabuild.devpost.com) hackathon. This is the backend repo, it includesthe [smart-contracts](./contracts/) and an [interface](./interfaces/) for dezentralized data storage.
 
 ## Badges
 
-Add badges from somewhere like: [shields.io](https://shields.io/)
+<!-- Add badges from somewhere like: [shields.io](https://shields.io/) -->
 
-![AppVeyor](https://img.shields.io/appveyor/build/AERX-dev/MetaBuildHackathon?style=plastic)
 
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+
+![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/AERX-dev/MetaBuildHackathon?style=for-the-badge&color=magenta)
+![GitHub top language](https://img.shields.io/github/languages/top/AERX-dev/MetaBuildHackathon?style=for-the-badge&color=red)
+![Lines of code](https://img.shields.io/tokei/lines/github/AERX-dev/MetaBuildHackathon?style=for-the-badge&color=orange)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/AERX-dev/MetaBuildHackathon?color=lightblue&style=for-the-badge)
 
 ## Smart Contracts
 
 Smart contracts are stored in [`contracts`](./contracts/). Here's what you do with them:
 
-1. Install ```near-cli```
 1. Install ```cargo install wasm-pack``` to build the WASM file.
-2. Write smart contract in Rust.
-3. Compile with ```bash ./build.sh <folder>``` folder for now is [`contract/nft`](./contracts/nft/).
-4. Deploy on dev-near ```near dev-deploy --wasmFile res/<contract>.wasm```
+3. Compile all contracts and test with  ```bash ./build.sh``` =, the wasm contracts will end up in [res](./res/).
+1. Install ```near-cli```
+3. Login to near ```near login``` with you `<ID`
+4. Deploy, init and run predefined function calls with:
+```bash
+bash ./run.sh <your-id>
+```
 
 Every contract has its own readme.
-Check the [`run.sh`](run.sh) file for a walk through from deployment till nft transfer.
+The [`run.sh`](run.sh) walks you through the basic functionalities, from deployment till nft minting.
 
 
-### Decentralized Data Storage
+## Decentralized Data Storage
 
-IPFS is a gawd dam PROTOCOL, not a place you upload your files. You can run your own node and contribute to the network. More imporantly, you can pin your files so these will be available while you are online.
+[IPFS](https://ipfs.io/) is a gawd dam PROTOCOL, not a place you upload your files. Luckily we have [Crust](https://crust.network/), a hosting-incentivize layer. You can run your own node and contribute to the network or use the public gateway. If you run your own node, it makes sense to pin your files so these will be available while you are online.
 
+To store your files, you'll need a Crust account, also a NEAR account but I suppose you already have one if you read till here. Crust offers a testnet, I highly recommend that to play around. Once you made your account, define the environment variables as told in the [instructions](./interfaces/crust_ipfs/README.md).
 
-
-Testing:
+## Testing:
 ```bash
 cargo test -- --nocapture
 # Test python scripts
 pytest
-```
-    
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://link-to-project
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Install dependencies
-
-```bash
-  npm install
 ```
 
 <!-- Start the server
@@ -72,9 +59,14 @@ Install dependencies
 
 ## Authors
 
-- [@3lLobo](https://www.github.com/3lLobo)
-- [@Kondwani7](https://github.com/Kondwani7)
-
+- @3lLobo
+- @innazh
+- @samullman
+- @pashq1
+- @Kondwani7
 
 ## Acknowledgements
 
+I thank the trees, for giving us live 
+
+# :seedling:

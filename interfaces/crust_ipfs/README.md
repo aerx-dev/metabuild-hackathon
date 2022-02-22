@@ -25,7 +25,9 @@ This will allow it to connect to the Crust wewbsite, where you can interact with
 
 Same old, same old:
 ```shell
-yarn & yarn build
+npm install -g yarn
+yarn
+yarn build
 ```
 
 ## Run
@@ -42,4 +44,4 @@ All environment variables are saved in a dotenv file.
 ## Resources
 
 Create a [Crust Wallet](https://wiki.crust.network/docs/en/crustAccount).
-Compress and encrypt your data.
+Compress and encrypt your data. 
