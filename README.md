@@ -67,6 +67,6 @@ pytest
 
 ## Acknowledgements
 
-I thank the trees, for giving us live 
+I thank the trees, for giving us life 
 
 # :seedling:
