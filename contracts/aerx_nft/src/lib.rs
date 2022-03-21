@@ -130,7 +130,8 @@ impl Contract {
     }
 
     #[payable]
-    pub fn set_comment( &mut self, _token_id: u8, _comment: String) {
+    pub fn set_comment( &mut self, token_id: String, _comment: String) {
+        let _token_id: u8 = token_id.parse().unwrap();
         let mut _comments=match self.comment_map.get(&_token_id){
             Some(x)=>x,   // x is vector of memos
             None=>vec![] //else this will return an empty vector
@@ -138,33 +139,40 @@ impl Contract {
 
         _comments.push( _comment);
         //todo look at insert doc
+        self.comment_map.remove(&_token_id);
         self.comment_map.insert(&_token_id, &_comments);
     }     
       
 
 
     #[payable]
-    pub fn set_charge( &mut self, _token_id: u8, _charge: u128) {
+    pub fn set_charge( &mut self, token_id: String, _charge: u128) {
+        // TODO assert that caller is owner.
+        assert!(self.tokens.owner_id == env::signer_account_id(), "Only the contract owner may call this function. Bacq off!");
+        let _token_id: u8 = token_id.parse().unwrap();
         let mut _charge_map_int=match self.charge_map.get(&_token_id){
             Some(x)=>x,   // x is vector of memos
             None=>0u128 //else this will return an empty vector
         };
         _charge_map_int += _charge;// increment value of charge_map_int by value of _charge
+        self.charge_map.remove(&_token_id);
         self.charge_map.insert(&_token_id, &_charge_map_int);
        
     }
 
-    pub fn get_comments( &mut self, token_id: u8) -> Vec<String> {
+    pub fn get_comments( &self, token_id: String) -> Vec<String> {
         // return all comments for that ID
-        match self.comment_map.get(&token_id){
+        let _token_id: u8 = token_id.parse().unwrap();
+        match self.comment_map.get(&_token_id){
             Some(x)=>x, // vector that contains all memos
             None=>vec![] //else this will return an empty vector
         }
     }
 
-    pub fn get_charge( &mut self, token_id: u8) -> u128 {
+    pub fn get_charge( &self, token_id: String) -> u128 {
         // return the charge for that ID
-        match self.charge_map.get(&token_id){
+        let _token_id: u8 = token_id.parse().unwrap();
+        match self.charge_map.get(&_token_id){
             Some(x) => x, // vector that contains all memos
             None => 0 //else this will return an empty vector
         }
