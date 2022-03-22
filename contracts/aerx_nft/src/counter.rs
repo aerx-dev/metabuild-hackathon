@@ -6,13 +6,13 @@ use near_sdk::{env, near_bindgen};
 #[derive(Default, BorshDeserialize, BorshSerialize)]
 pub struct Counter {
     // See more data types at https://doc.rust-lang.org/book/ch03-02-data-types.html
-    val: i8, // i8 is signed. unsigned integers are also available: u8, u16, u32, u64, u128
+    val: u8, // u8 is signed. unsigned integers are also available: u8, u16, u32, u64, u128
 }
 
 // #[near_bindgen]
 impl Counter {
 
-    pub fn counter_init(_val: i8) -> Self {
+    pub fn counter_init(_val: u8) -> Self {
         let mut cntr = Counter {val: 0};
         return cntr;
     }
@@ -27,7 +27,7 @@ impl Counter {
     /// ```bash
     /// near view counter.YOU.testnet get_num
     /// ```
-    pub fn get_num(&self) -> i8 {
+    pub fn get_num(&self) -> u8 {
         return self.val;
     }
 
@@ -43,8 +43,8 @@ impl Counter {
     pub fn increment(&mut self) {
         // note: adding one like this is an easy way to accidentally overflow
         // real smart contracts will want to have safety checks
-        // e.g. self.val = i8::wrapping_add(self.val, 1);
-        // https://doc.rust-lang.org/std/primitive.i8.html#method.wrapping_add
+        // e.g. self.val = u8::wrapping_add(self.val, 1);
+        // https://doc.rust-lang.org/std/primitive.u8.html#method.wrapping_add
         self.val += 1;
         let log_message = format!("Increased NFT count to {}", self.val);
 
@@ -62,8 +62,8 @@ impl Counter {
     pub fn decrement(&mut self) {
         // note: subtracting one like this is an easy way to accidentally overflow
         // real smart contracts will want to have safety checks
-        // e.g. self.val = i8::wrapping_sub(self.val, 1);
-        // https://doc.rust-lang.org/std/primitive.i8.html#method.wrapping_sub
+        // e.g. self.val = u8::wrapping_sub(self.val, 1);
+        // https://doc.rust-lang.org/std/primitive.u8.html#method.wrapping_sub
         self.val -= 1;
         let log_message = format!("Decreased NFT count to {}", self.val);
         env::log(log_message.as_bytes());

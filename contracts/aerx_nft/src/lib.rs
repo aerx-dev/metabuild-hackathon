@@ -21,7 +21,7 @@ use near_contract_standards::non_fungible_token::metadata::{
 use near_contract_standards::non_fungible_token::{Token, TokenId};
 use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::LazyOption;
+use near_sdk::collections::{LazyOption, LookupMap};
 use near_sdk::json_types::ValidAccountId;
 use near_sdk::{
     env, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue,
@@ -36,11 +36,12 @@ near_sdk::setup_alloc!();
 pub struct Contract {
     tokens: NonFungibleToken,
     metadata: LazyOption<NFTContractMetadata>,
-    nft_count: Counter
+    nft_count: Counter,
+    comment_map: LookupMap<u8, Vec<String>>,
+    charge_map: LookupMap<u8, u128>,
 }
 
-const MATE_ICON: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 288 288'%3E%3Cg id='l' data-name='l'%3E%3Cpath fill='%23C4A2FC' d='M269.9 130.8c-20.5-42.4-51.3-42.3-71.7 0-8.6 18.2-13.2 38.1-13.6 58.2 0 23.7 16.9 44.1 40.1 48.6-6.1 18-18 33.7-40.8 37-2.5.4-4.2 2.6-3.8 5.1s2.6 4.2 5.1 3.8c23.9-3.4 40.5-18.9 48.8-45 5.9-20.7 7.5-42.3 4.6-63.6-.4-2.5 1.3-4.7 3.8-5.1 2.5-.4 4.7 1.3 5.1 3.8 2.8 21.4 1.5 43.1-3.8 64 23.2-4.6 39.9-24.9 39.9-48.6-.5-20.1-5.1-40-13.7-58.2zM170.4 99c-23.9 3.4-40.5 18.9-48.8 45-5.8 20.7-7.3 42.3-4.6 63.6.4 2.5-1.3 4.7-3.8 5.1-2.5.4-4.7-1.3-5.1-3.8-2.8-21.4-1.5-43.1 3.8-64-23.1 4.6-39.9 25-39.9 48.6.4 20.1 5 40 13.6 58.2 20.5 42.4 51.3 42.3 71.7 0 8.6-18.2 13.2-38.1 13.6-58.2 0-23.7-16.9-44.1-40.1-48.6 6.1-18 18-33.7 40.8-37 2.5-.4 4.2-2.6 3.8-5.1s-2.6-4.1-5-3.8z'/%3E%3Cpath fill='%236D2ED3' d='M189 202.5h-45.5c25.8-12 44.8-35 51.7-62.6s1-56.8-16.1-79.6c-.9-1.1-2.2-1.8-3.6-1.8h-42.2l18.3-36.6 38.4-8.5c1.6-.3 2.9-1.5 3.3-3 .5-1.5.1-3.2-1-4.4-1.1-1.2-2.7-1.7-4.3-1.3l-40.5 9c-1.3.3-2.4 1.2-3 2.4l-21.3 42.5H31.5c-1.4 0-2.7.7-3.6 1.8-17.1 22.8-23 52-16.1 79.6s25.9 50.6 51.7 62.6H18c-7.5 0-13.5 6-13.5 13.5s6 13.5 13.5 13.5h171c7.5 0 13.5-6 13.5-13.5 0-7.6-6-13.6-13.5-13.6zM33.8 67.5h139.4c3 4.3 5.6 8.8 7.8 13.5H26c2.2-4.7 4.8-9.3 7.8-13.5zM18 117c0-9.2 1.5-18.3 4.4-27h162.3c2.9 8.7 4.4 17.8 4.4 27 0 1.4-.1 2.8-.2 4.2l-21.2 8.9-19.7-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-19.6-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-19.6-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-21.2-8.9c-.2-1.4-.3-2.8-.3-4.2zm1.3 14.4 18.3 7.7c1.1.5 2.4.5 3.5 0l19.6-8.3 19.6 8.3c1.1.5 2.4.5 3.5 0l19.6-8.3 19.6 8.3c1.1.5 2.4.5 3.5 0l19.6-8.3 19.7 8.3c1.1.5 2.4.5 3.5 0l18.3-7.7c-1.1 6.8-3.1 13.4-5.8 19.7l-14.2 6-19.7-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-19.6-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-19.6-8.3c-1.1-.5-2.4-.5-3.5 0l-19.6 8.3-14.2-6c-2.8-6.3-4.7-12.9-5.9-19.7zM32 163.8l5.6 2.4c1.1.5 2.4.5 3.5 0l19.6-8.3 19.6 8.3c1.1.5 2.4.5 3.5 0l19.6-8.3 19.6 8.3c1.1.5 2.4.5 3.5 0l19.6-8.3 19.7 8.3c1.1.5 2.4.5 3.5 0l5.6-2.4c-15.8 24.2-42.6 38.7-71.5 38.7-28.7 0-55.6-14.6-71.4-38.7zm157 56.7H18c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5h171c2.5 0 4.5 2 4.5 4.5s-2 4.5-4.5 4.5z'/%3E%3C/g%3E%3C/svg%3E";
-
+const AERX_ICON_URL: &str = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -30 230 210'%3E%3Cg id='l' data-name='l'%3E%3Cpath fill='%23C4A2FC' d='M57,3.2c-15.4,2-25.4,4.7-35.8,9.4L16,15l5.7,11.5C25.2,33.5,28,38,29,38c.8,0,5.3-1.3,10-2.9C51.4,30.9,56.1,30,65,30c11.1,0,17,2.4,20.6,8.6,1.9,3.3,2.4,5.5,2.4,11.2,0,4.4-.5,7.4-1.2,7.8-.6.4-8.8,1.1-18.2,1.6-37,1.8-54.4,9.1-62.2,26.1-2.7,5.8-2.9,7-2.9,19.2,0,13,0,13,3.7,20.6,5.8,11.9,15.3,19.3,28,22,7,1.5,27.7.6,35.3-1.5,10.5-3,20.9-9.5,28.7-18l4.7-5.1,7,7.1c7.3,7.3,15.9,12.4,27.1,16.1,8,2.6,39.3,2.6,50-.1,13.1-3.2,19.1-5.7,20.1-8.3,1-2.7,1.3-24.6.3-25.6-.3-.3-2.9.3-5.8,1.5-13.4,5.3-28.3,8.1-41.6,7.6-9.6-.3-11.2-.6-17.2-3.6-10.2-5-16.5-14.4-17.5-26.3l-.6-5.9,4.4-.1c2.4-.1,22.9-.2,45.4-.3l41-.1-.1-15.6c0-23.3-4.2-36.3-15.6-48.4C191,9.9,180.1,4.9,163.3,3.1c-17.4-1.9-34,2.4-46.4,12.1-2,1.5-4.2,2.8-4.9,2.8-.7,0-2.8-1.4-4.7-3-4-3.6-11.9-7.7-18.2-9.6C84.2,4,67.8,1.9,64.5,2.2c-1.1.1-4.5.6-7.5,1zm109.5,27.7c8.9,4,15.3,14.8,15.5,25.8V60h-55v-3.9c0-11.8,8-22.8,19-26.2,4.9-1.5,16.3-.9,20.5,1zM87.8,88.8c.4,10.9-1.5,17.5-6.8,23.4-5.8,6.6-11.1,8.8-21.2,8.8-9.2,0-13.2-1.6-16.5-6.7-2.7-4.1-2.5-17.6.4-22.1,5.4-8.6,15.7-12.1,34.8-11.8l9,.1.3,8.3z'/%3E%3C/g%3E%3C/svg%3E";
 
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
@@ -59,9 +60,9 @@ impl Contract {
     pub fn new_default_meta(owner_id: ValidAccountId) -> Self {
         let nftea_meta: NFTContractMetadata = NFTContractMetadata {
             spec: NFT_METADATA_SPEC.to_string(), // required, essentially a version like "nft-1.0.0"
-            name: "Wolf NFT".to_string(), // required, ex. "Mochi Rising — Digital Edition" or "Metaverse 3"
-            symbol: "NFTea".to_string(), // required, ex. "MOCHI"
-            icon: Some(MATE_ICON.to_string()), // Data URL
+            name: "AERX Content NFT".to_string(), // required, ex. "Mochi Rising — Digital Edition" or "Metaverse 3"
+            symbol: "cNFT".to_string(), // required, ex. "MOCHI"
+            icon: Some(AERX_ICON_URL.to_string()), // Data URL
             base_uri: Some("https://ipfs.io/ipfs/".to_string()), // Centralized gateway known to have reliable access to decentralized storage assets referenced by `reference` or `media` URLs
             reference: None, // URL to a JSON file with more info
             reference_hash: None, // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
@@ -85,7 +86,7 @@ impl Contract {
     pub fn new(owner_id: ValidAccountId, metadata: NFTContractMetadata) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         metadata.assert_valid();
-        let val_zero: i8 = 0;
+        let val_zero: u8 = 0;
         let nft_counter = Counter::counter_init(val_zero);
         Self {
             tokens: NonFungibleToken::new(
@@ -96,9 +97,13 @@ impl Contract {
                 Some(StorageKey::Approval),
             ),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
-            nft_count: nft_counter
+            nft_count: nft_counter,
+            comment_map: LookupMap::new(b"comment".to_vec()),
+            charge_map: LookupMap::new(b"charge".to_vec())
         }
     }
+
+
 
     /// Mint a new token with ID=`token_id` belonging to `receiver_id`.
     ///
@@ -116,10 +121,65 @@ impl Contract {
     ) -> Token {
         // NFT count increments with +1 everytime a NFT is minted. The tokenID is therefore incremental and unique.
         self.nft_count.increment();
-        let token_id = self.nft_count.get_num().to_string();
-        self.tokens.mint(token_id, receiver_id, Some(token_metadata))
+        let token_id: u8 = self.nft_count.get_num();
+        let token_id_str = self.nft_count.get_num().to_string();
+        let charge_map_int = &0u128;
+        self.comment_map.insert(&token_id, &vec![]);
+        self.charge_map.insert(&token_id, &charge_map_int);
+        self.tokens.mint(token_id_str, receiver_id, Some(token_metadata))
     }
+
+    #[payable]
+    pub fn set_comment( &mut self, token_id: String, _comment: String) {
+        let _token_id: u8 = token_id.parse().unwrap();
+        let mut _comments=match self.comment_map.get(&_token_id){
+            Some(x)=>x,   // x is vector of memos
+            None=>vec![] //else this will return an empty vector
+        };
+
+        _comments.push( _comment);
+        //todo look at insert doc
+        self.comment_map.remove(&_token_id);
+        self.comment_map.insert(&_token_id, &_comments);
+    }     
+      
+
+
+    #[payable]
+    pub fn set_charge( &mut self, token_id: String, _charge: u128) {
+        // TODO assert that caller is owner.
+        assert!(self.tokens.owner_id == env::signer_account_id(), "Only the contract owner may call this function. Bacq off!");
+        let _token_id: u8 = token_id.parse().unwrap();
+        let mut _charge_map_int=match self.charge_map.get(&_token_id){
+            Some(x)=>x,   // x is vector of memos
+            None=>0u128 //else this will return an empty vector
+        };
+        _charge_map_int += _charge;// increment value of charge_map_int by value of _charge
+        self.charge_map.remove(&_token_id);
+        self.charge_map.insert(&_token_id, &_charge_map_int);
+       
+    }
+
+    pub fn get_comments( &self, token_id: String) -> Vec<String> {
+        // return all comments for that ID
+        let _token_id: u8 = token_id.parse().unwrap();
+        match self.comment_map.get(&_token_id){
+            Some(x)=>x, // vector that contains all memos
+            None=>vec![] //else this will return an empty vector
+        }
+    }
+
+    pub fn get_charge( &self, token_id: String) -> u128 {
+        // return the charge for that ID
+        let _token_id: u8 = token_id.parse().unwrap();
+        match self.charge_map.get(&_token_id){
+            Some(x) => x, // vector that contains all memos
+            None => 0 //else this will return an empty vector
+        }
+    }
+
 }
+
 
 near_contract_standards::impl_non_fungible_token_core!(Contract, tokens);
 near_contract_standards::impl_non_fungible_token_approval!(Contract, tokens);
@@ -197,7 +257,7 @@ mod tests {
             .build());
 
         let token_id = "0".to_string();
-        let token = contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+        let token = contract.nft_mint(accounts(0), sample_token_metadata());
         assert_eq!(token.token_id, token_id);
         assert_eq!(token.owner_id, accounts(0).to_string());
         assert_eq!(token.metadata.unwrap(), sample_token_metadata());
@@ -216,7 +276,7 @@ mod tests {
             .predecessor_account_id(accounts(0))
             .build());
         let token_id = "0".to_string();
-        contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+        contract.nft_mint(accounts(0), sample_token_metadata());
 
         testing_env!(context
             .storage_usage(env::storage_usage())
@@ -253,7 +313,7 @@ mod tests {
             .predecessor_account_id(accounts(0))
             .build());
         let token_id = "0".to_string();
-        contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+        contract.nft_mint(accounts(0), sample_token_metadata());
 
         // alice approves bob
         testing_env!(context
@@ -284,7 +344,7 @@ mod tests {
             .predecessor_account_id(accounts(0))
             .build());
         let token_id = "0".to_string();
-        contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+        contract.nft_mint(accounts(0), sample_token_metadata());
 
         // alice approves bob
         testing_env!(context
@@ -322,7 +382,7 @@ mod tests {
             .predecessor_account_id(accounts(0))
             .build());
         let token_id = "0".to_string();
-        contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+        contract.nft_mint(accounts(0), sample_token_metadata());
 
         // alice approves bob
         testing_env!(context
