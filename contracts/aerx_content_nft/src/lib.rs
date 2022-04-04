@@ -129,6 +129,9 @@ impl Contract {
         self.tokens.mint(token_id_str, receiver_id, Some(token_metadata))
     }
 
+
+
+
     #[payable]
     pub fn set_comment( &mut self, token_id: String, _comment: String) {
         let _token_id: u8 = token_id.parse().unwrap();
@@ -146,10 +149,11 @@ impl Contract {
 
 
     #[payable]
-    pub fn set_charge( &mut self, token_id: String, _charge: u128) {
+    pub fn set_charge( &mut self, token_id: String, charge: String) {
         // TODO assert that caller is owner.
         assert!(self.tokens.owner_id == env::signer_account_id(), "Only the contract owner may call this function. Bacq off!");
         let _token_id: u8 = token_id.parse().unwrap();
+        let _charge: u128 = charge.parse().unwrap();
         let mut _charge_map_int=match self.charge_map.get(&_token_id){
             Some(x)=>x,   // x is vector of memos
             None=>0u128 //else this will return an empty vector
@@ -178,6 +182,12 @@ impl Contract {
         }
     }
 
+    pub fn get_all_charge( &self) -> Vec<Vec<u128>> {
+        // return the charge for all tokens
+        self.nft_tokens(None, None).iter()
+        .map(|nft| Vec::from([nft.token_id.parse().unwrap(), self.get_charge(nft.token_id.to_string())]))
+        .collect()
+    }
 }
 
 

@@ -31,8 +31,8 @@ near_sdk::setup_alloc!();
 pub struct Contract {
     token: FungibleToken,
     metadata: LazyOption<FungibleTokenMetadata>,
-    NFTpremie: u128,
-    NFTid: ValidAccountId,
+    nft_premie: u128,
+    nft_id: ValidAccountId,
     owner: ValidAccountId,
     collected_premie: LookupSet<AccountId>,
 }
@@ -82,8 +82,8 @@ impl Contract {
         let mut this = Self {
             token: FungibleToken::new(b"a".to_vec()),
             metadata: LazyOption::new(b"m".to_vec(), Some(&metadata)),
-            NFTpremie: NFT_PREMIE,
-            NFTid: nft_id,
+            nft_premie: NFT_PREMIE,
+            nft_id: nft_id,
             owner: owner_id.clone(),
             collected_premie: LookupSet::new(b"s")
         };
@@ -107,7 +107,7 @@ impl Contract {
 
     // Reset collected_premie Set
     pub fn reset_collected_premie(&mut self) {
-        assert!(env::signer_account_id() == self.owner.to_string(), b"Only the contract owner is allowed to reset this!");
+        assert!(env::signer_account_id() == self.owner.to_string(), "Only the contract owner is allowed to reset this!");
         self.collected_premie = LookupSet::new(b"s");
     }
 
@@ -120,7 +120,7 @@ impl Contract {
     #[allow(unused_variables)]
     #[payable]
     pub fn collect_premie(&mut self, account_id: ValidAccountId) -> bool {
-        assert_eq!(&env::signer_account_id(), self.NFTid.as_ref(), "Only applicable when creating a profile NFT!");
+        assert_eq!(&env::signer_account_id(), self.nft_id.as_ref(), "Only applicable when creating a profile NFT!");
         
         let amount: Balance = env::attached_deposit();
         let min_balance = self.storage_balance_bounds().min.0;
@@ -138,7 +138,7 @@ impl Contract {
                 Promise::new(acc_str).transfer(amount);
         }}
         // Deposit the premie
-        self.token.internal_deposit(&account_id.to_string(), self.NFTpremie.into());
+        self.token.internal_deposit(&account_id.to_string(), self.nft_premie.into());
         if self.collected_premie.contains(&account_id.to_string()) == false {
             self.collected_premie.insert(&account_id.to_string());
         }
@@ -149,13 +149,13 @@ impl Contract {
         self.storage_balance_bounds().min.0
     }
 
-    pub fn get_nftpremie(&self) -> u128 {
-        self.NFTpremie
+    pub fn get_nft_premie(&self) -> u128 {
+        self.nft_premie
     }
 
-    pub fn set_nftpremie(&mut self, _nft_premie: u128) {
+    pub fn set_nft_premie(&mut self, _nft_premie: u128) {
         assert_eq!(self.owner.as_ref(), &env::signer_account_id());
-        self.NFTpremie = _nft_premie;
+        self.nft_premie = _nft_premie;
     }
 
     pub fn set_owner(&mut self, new_owner: ValidAccountId) {
@@ -163,13 +163,13 @@ impl Contract {
         self.owner = new_owner;
     }
 
-    pub fn get_nftId(&self) -> ValidAccountId {
-        self.NFTid.clone()
+    pub fn get_nft_id(&self) -> ValidAccountId {
+        self.nft_id.clone()
     }
 
-    pub fn set_nftId(&mut self, _nft_id: ValidAccountId) {
+    pub fn set_nft_id(&mut self, _nft_id: ValidAccountId) {
         assert_eq!(self.owner.as_ref(), &env::signer_account_id());
-        self.NFTid = _nft_id;
+        self.nft_id = _nft_id;
     }
 }
 

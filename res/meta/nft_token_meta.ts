@@ -11,5 +11,7 @@ type TokenMetadata = {
   updated_at: number|null, // When token was last updated, Unix epoch in milliseconds
   extra: string|null, // anything extra the NFT wants to store on-chain. Can be stringified JSON.
   reference: string|null, // URL to an off-chain JSON file with more info.
-  reference_hash: string|null // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
-}
+  reference_hash: string|null, // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
+  charge: number|null,
+  comments: string|null
+};
