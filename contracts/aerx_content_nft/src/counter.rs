@@ -13,7 +13,7 @@ pub struct Counter {
 impl Counter {
 
     pub fn counter_init(_val: u8) -> Self {
-        let mut cntr = Counter {val: 0};
+        let cntr = Counter {val: 0};
         return cntr;
     }
     /// Returns 8-bit signed integer of the counter value.
@@ -46,9 +46,6 @@ impl Counter {
         // e.g. self.val = u8::wrapping_add(self.val, 1);
         // https://doc.rust-lang.org/std/primitive.u8.html#method.wrapping_add
         self.val += 1;
-        let log_message = format!("Increased NFT count to {}", self.val);
-
-
     }
 
     /// Decrement (subtract from) the counter.
