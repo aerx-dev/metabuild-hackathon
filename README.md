@@ -19,6 +19,7 @@ Our contribution to the [NEAR MetaBUILD](https://metabuild.devpost.com) hackatho
 Smart contracts are stored in [`contracts`](./contracts/). Here's what you do with them:
 
 1. Install ```cargo install wasm-pack``` to build the WASM file.
+2. Install ```rustup target add wasm32-unknown-unknown``` to compile WASM on any machine to any target.
 3. Compile all contracts and test with  ```bash ./build.sh``` =, the wasm contracts will end up in [res](./res/).
 1. Install ```near-cli```
 3. Login to near ```near login``` with you `<ID`
